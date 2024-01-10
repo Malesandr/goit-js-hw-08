@@ -66,3 +66,53 @@ const images = [
   },
 ];
 
+const galleryItem = document.querySelector(".gallery");
+
+galleryItem.innerHTML = images.reduce(
+    (acc, element) =>
+        acc +
+        `<li class="gallery-item">
+            <a class="gallery-link" href="${element.original}">
+                <img
+                    class="gallery-image"
+                    src="${element.preview}"
+                    data-source="${element.original}"
+                    alt="${element.description}"
+                    width="360"
+                    height="200" />
+            </a>
+        </li>`,
+    ""
+);
+
+const lightBox = basicLightbox.create(
+  `<img class="max-image" src="" width="1112" height="640">`,
+  {
+    onShow: () => {
+      document.addEventListener("keydown", onRemoveListener);
+    },
+    onClose: () => {
+      document.removeEventListener("keydown", onRemoveListener);
+    },
+  }
+);
+
+function onRemoveListener(event) {
+  if (event.key === "Escape") {
+    lightBox.close();
+  }
+}
+
+
+galleryItem.addEventListener("click", (event) => {
+  event.preventDefault();
+
+  if (event.target.nodeName !== "IMG") {
+    return;
+  }
+
+  const lightBoxImg = lightBox.element().querySelector(".max-image");
+  lightBoxImg.src = event.target.dataset.source;
+
+  lightBox.show();
+});
